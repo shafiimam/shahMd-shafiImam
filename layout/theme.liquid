@@ -31,6 +31,22 @@
     {%- render 'scripts' -%}
     {%- render 'theme-styles-variables' -%}
     {%- render 'color-schemes' -%}
+    {%- comment -%}
+      Jost + Lustria (Google Fonts) for Shop the look, header banner, and similar sections.
+      --font-lustria is consumed in section CSS where a serif accent is required.
+    {%- endcomment -%}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Lustria&display=swap"
+      rel="stylesheet"
+    >
+    {% style %}
+      :root {
+        --font-lustria: 'Lustria', Georgia, 'Times New Roman', serif;
+        --font-jost: 'Jost', system-ui, sans-serif;
+      }
+    {% endstyle %}
 
     {% if request.design_mode %}
       {%- render 'theme-editor' -%}

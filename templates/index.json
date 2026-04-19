@@ -6,7 +6,8 @@
  * or related systems. Please exercise caution as any changes
  * made to this file may be overwritten.
  * ------------------------------------------------------------
- */{
+ */
+{
   "sections": {
     "hero_jVaWmY": {
       "type": "hero",
@@ -57,6 +58,7 @@
         "text_YLPk4p",
         "button_H9gpTf"
       ],
+      "disabled": true,
       "name": "t:names.hero",
       "settings": {
         "media_type_1": "image",
@@ -65,6 +67,7 @@
         "custom_mobile_media": false,
         "media_type_1_mobile": "image",
         "media_type_2_mobile": "image",
+        "link": "",
         "open_in_new_tab": false,
         "content_direction": "column",
         "vertical_on_mobile": true,
@@ -261,6 +264,7 @@
           ]
         }
       },
+      "disabled": true,
       "name": "Featured collection",
       "settings": {
         "collection": "all",
@@ -281,10 +285,126 @@
         "padding-block-start": 48,
         "padding-block-end": 48
       }
+    },
+    "header_banner_qgC9NB": {
+      "type": "header-banner",
+      "name": "Header Banner",
+      "settings": {
+        "logo": "shopify://shop_images/header-logo.svg",
+        "header_text": "Find the ideal gift for your loved ones.",
+        "header_button_label": "Choose Gift",
+        "header_button_url": "",
+        "header_button_style": "secondary",
+        "heading": "The Gift Guide",
+        "body_text": "Discover Joy: Your Ultimate Holiday Gift Destination. Explore our curated selection and find the perfect gifts to delight your loved ones this holiday season.",
+        "hero_button_label": "Shop Now",
+        "hero_button_url": "",
+        "hero_button_style": "primary",
+        "hero_image": "shopify://shop_images/hero-banner.png",
+        "hero_image_mobile": "shopify://shop_images/hero-banner.png",
+        "secondary_image": "shopify://shop_images/hero-banner.png",
+        "footer_text": "Sustainable, ethically made clothes in sizes XXS to 6XL"
+      }
+    },
+    "shop_the_look_tpCdnM": {
+      "type": "shop-the-look",
+      "blocks": {
+        "look_hh8LWt": {
+          "type": "look",
+          "settings": {
+            "image": "shopify://shop_images/black-bag-over-the-shoulder_925x_4cae5708-5e9e-4e7e-96ec-9649f0c20cd8.jpg",
+            "hotspot_x": 42,
+            "hotspot_y": 75,
+            "hotspot_accessibility_label": "View product details",
+            "product": "black-leather-bag"
+          }
+        },
+        "look_DMamDU": {
+          "type": "look",
+          "settings": {
+            "image": "shopify://shop_images/man-adjusts-blue-tuxedo-bowtie_925x_55a49e12-d54b-488e-b7a0-ea4c201eb01f.jpg",
+            "hotspot_x": 82,
+            "hotspot_y": 50,
+            "hotspot_accessibility_label": "View product details",
+            "product": "blue-silk-tuxedo"
+          }
+        },
+        "look_PykrHe": {
+          "type": "look",
+          "settings": {
+            "image": "shopify://shop_images/red-plaid-shirt_925x_70e9e5a8-8fc5-4d60-9a9a-cc2e0dd57cc9.jpg",
+            "hotspot_x": 60,
+            "hotspot_y": 18,
+            "hotspot_accessibility_label": "View product details",
+            "product": "chequered-red-shirt"
+          }
+        },
+        "look_Tyhpbe": {
+          "type": "look",
+          "settings": {
+            "image": "shopify://shop_images/leather-jacket-and-tea_925x_2490cde1-7e61-4151-9a65-de8a763bc701.jpg",
+            "hotspot_x": 70,
+            "hotspot_y": 16,
+            "hotspot_accessibility_label": "View product details",
+            "product": ""
+          }
+        },
+        "look_GwHKQE": {
+          "type": "look",
+          "settings": {
+            "image": "shopify://shop_images/casual-fashion-woman_925x_56b56608-f207-45c1-b677-bb5aa26c1c7a.jpg",
+            "hotspot_x": 49,
+            "hotspot_y": 23,
+            "hotspot_accessibility_label": "View product details",
+            "product": "classic-varsity-top"
+          }
+        },
+        "look_D8PKf3": {
+          "type": "look",
+          "settings": {
+            "image": "shopify://shop_images/young-female-models-denim_925x_44c2cf9e-4030-4347-9d4a-f0e4a1479b4a.jpg",
+            "hotspot_x": 74,
+            "hotspot_y": 37,
+            "hotspot_accessibility_label": "View product details",
+            "product": ""
+          }
+        }
+      },
+      "block_order": [
+        "look_hh8LWt",
+        "look_DMamDU",
+        "look_PykrHe",
+        "look_Tyhpbe",
+        "look_GwHKQE",
+        "look_D8PKf3"
+      ],
+      "name": "Shop the look",
+      "settings": {
+        "heading": "Tisso vison in the wild",
+        "content_max_width": 1360,
+        "grid_gap": 20,
+        "card_corner_radius": 0,
+        "padding_top": 48,
+        "padding_bottom": 48,
+        "padding_horizontal": 24,
+        "modal_button_style": "primary",
+        "add_to_cart_label": "Add to cart",
+        "empty_product_message": "Choose a product for this look in the theme editor.",
+        "show_section_ctas": false,
+        "ctas_alignment": "flex-start",
+        "cta_primary_label": "",
+        "cta_primary_url": "",
+        "primary_button_style": "primary",
+        "cta_secondary_label": "",
+        "cta_secondary_url": "",
+        "secondary_button_style": "secondary"
+      }
     }
   },
   "order": [
     "hero_jVaWmY",
-    "product_list_fa6P9H"
+    "product_list_fa6P9H",
+    "header_banner_qgC9NB",
+    "shop_the_look_tpCdnM"
   ]
 }

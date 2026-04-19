@@ -1,0 +1,759 @@
+
+
+{%- liquid
+  assign header_btn_style = section.settings.header_button_style | default: 'secondary'
+  assign hero_btn_style    = section.settings.hero_button_style   | default: 'primary'
+  assign mobile_img        = section.settings.hero_image_mobile
+  if mobile_img == blank
+    assign mobile_img = section.settings.hero_image
+  endif
+-%}
+
+<style>
+  #hb-{{ section.id }} {
+    --hb-heading: clamp(30px, 4.861vw, 165px);
+    --hb-body:    clamp(16px, 1.389vw, 47px);
+    --hb-ui:      clamp(12px, 1.111vw, 43px);
+  }
+
+  /* ── Bar ── */
+  #hb-{{ section.id }} .hb-bar {
+    background: #f7f7f7;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: clamp(10px, 0.694vw, 26.7px) clamp(20px, 3.472vw, 133.3px);
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  }
+
+  /* ── Hamburger button ── */
+  #hb-{{ section.id }} .hb-bar__hamburger {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    flex-shrink: 0;
+    line-height: 0;
+    /* fixed size so both icons sit centred within it */
+    width: 22px;
+    height: 22px;
+    position: relative;
+  }
+
+  /* Both icons share the same centre point */
+  #hb-{{ section.id }} .hb-bar__icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Close icon hidden by default */
+  #hb-{{ section.id }} .hb-bar__icon--close {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(-45deg) scale(0.7);
+  }
+
+  /* Open state: swap icons */
+  #hb-{{ section.id }} hb-menu[open] .hb-bar__icon--open {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(45deg) scale(0.7);
+  }
+
+  #hb-{{ section.id }} hb-menu[open] .hb-bar__icon--close {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(0deg) scale(1);
+  }
+
+  #hb-{{ section.id }} .hb-bar__logo {
+    font-family: 'Jost', sans-serif;
+    font-weight: 500;
+    font-size: clamp(11px, 0.972vw, 37px);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #000;
+    text-decoration: none;
+    white-space: nowrap;
+    flex-shrink: 0;
+    line-height: 0;
+  }
+
+  #hb-{{ section.id }} .hb-bar__logo-img {
+    height: clamp(14px, 1.319vw, 50.7px);
+    width: auto;
+    display: block;
+  }
+
+  #hb-{{ section.id }} .hb-bar__text {
+    font-family: 'Jost', sans-serif;
+    font-weight: 400;
+    font-size: var(--hb-ui);
+    color: #000;
+    text-align: center;
+    white-space: nowrap;
+    margin: 0;
+    flex: 1;
+  }
+
+  /* ── Mobile drawer ── */
+  #hb-{{ section.id }} .hb-mobile-drawer {
+    display: none; /* hidden on desktop */
+  }
+
+  /* ── Buttons (shared) ── */
+  #hb-{{ section.id }} .hb-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(6px, 0.694vw, 26.7px);
+    font-family: 'Jost', sans-serif;
+    font-weight: 400;
+    font-size: var(--hb-ui);
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    position: relative;
+    overflow: hidden;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: color 0.35s ease;
+    line-height: 1;
+  }
+
+  #hb-{{ section.id }} .hb-btn__label,
+  #hb-{{ section.id }} .hb-btn__arrow {
+    position: relative;
+    z-index: 1;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    transition: color 0.35s ease;
+  }
+
+  /* Left-to-right fill */
+  #hb-{{ section.id }} .hb-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.35s ease;
+    z-index: 0;
+  }
+
+  #hb-{{ section.id }} .hb-btn:hover::before { transform: scaleX(1); }
+
+  /* Primary: black → yellow */
+  #hb-{{ section.id }} .hb-btn--primary {
+    background: #000;
+    color: #f5f5f5;
+    padding: clamp(10px, 0.903vw, 34.7px) clamp(16px, 1.597vw, 61.3px);
+  }
+  #hb-{{ section.id }} .hb-btn--primary::before  { background: #fff544; }
+  #hb-{{ section.id }} .hb-btn--primary:hover     { color: #000; }
+
+  /* Secondary: yellow → black */
+  #hb-{{ section.id }} .hb-btn--secondary {
+    background: #fff544;
+    color: #000;
+    padding: clamp(10px, 0.903vw, 34.7px) clamp(16px, 1.597vw, 61.3px);
+  }
+  #hb-{{ section.id }} .hb-btn--secondary::before { background: #000; }
+  #hb-{{ section.id }} .hb-btn--secondary:hover    { color: #fff; }
+
+  /* Bar button: 207×44px at 1440 → 552×117px at 3840 */
+  #hb-{{ section.id }} .hb-bar .hb-btn {
+    min-width: clamp(140px, 14.375vw, 552px);
+    height:    clamp(34px,   3.056vw, 117.3px);
+  }
+
+  /* Hero button: 220×50px at 1440 → 587×133px at 3840 */
+  #hb-{{ section.id }} .hb-hero__content .hb-btn {
+    min-width: 220px;
+    height:    50px;
+    max-width: max-content;
+  }
+
+  /* ── Hero ── */
+  #hb-{{ section.id }} .hb-hero {
+    background: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Top full-width image: aspect-ratio 1440×390 */
+  #hb-{{ section.id }} .hb-hero__top-img-wrap { width: 100%; line-height: 0; }
+
+  #hb-{{ section.id }} .hb-hero__top-img,
+  #hb-{{ section.id }} .hb-hero__top-placeholder {
+    width: 100%;
+    aspect-ratio: 1440 / 390;
+    display: block;
+    object-fit: cover;
+  }
+
+  /* Content block: bottom-left, below top image */
+  #hb-{{ section.id }} .hb-hero__content {
+    position: relative;
+    z-index: 1;
+    min-height: 27.083vw;
+    max-width: 38%;
+    padding: 2.431vw 0 3.472vw 4.653vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+
+  #hb-{{ section.id }} .hb-heading {
+    font-family: 'Jost', sans-serif;
+    font-weight: 500;
+    font-size: var(--hb-heading);
+    color: #000;
+    white-space: nowrap;
+    line-height: 1;
+    margin: 0 0 clamp(10px, 3.472vw, 133.3px) 0;
+  }
+
+  #hb-{{ section.id }} .hb-body {
+    font-family: 'Jost', sans-serif;
+    font-weight: 400;
+    font-size: var(--hb-body);
+    color: #000;
+    line-height: 1.4;
+    max-width: clamp(260px, 33.542vw, 1288px);
+    margin: 0 0 clamp(14px, 3.472vw, 133.3px) 0;
+  }
+
+  /*
+    Secondary image: absolutely placed relative to .hb-hero.
+    Figma 1440px: top=378px → 26.25vw; left=550/1440=38.19%, right=0, bottom=0
+  */
+  #hb-{{ section.id }} .hb-hero__secondary {
+    position: absolute;
+    top: 26.25vw;
+    left: 38.19%;
+    right: 0;
+    bottom: 0;
+    z-index: 0;
+    line-height: 0;
+  }
+
+  #hb-{{ section.id }} .hb-hero__secondary img,
+  #hb-{{ section.id }} .hb-hero__secondary-placeholder {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Mobile image: hidden on desktop */
+  #hb-{{ section.id }} .hb-hero__mobile-img-wrap { display: none; }
+
+  /* ── Footer bar ── */
+  #hb-{{ section.id }} .hb-footer-bar {
+    background: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(10px, 0.694vw, 26.7px) clamp(20px, 3.472vw, 133.3px);
+    overflow: hidden;
+  }
+
+  #hb-{{ section.id }} .hb-footer-bar p {
+    font-family: 'Jost', sans-serif;
+    font-weight: 400;
+    font-size: var(--hb-ui);
+    color: #000;
+    text-transform: uppercase;
+    text-align: center;
+    margin: 0;
+    white-space: nowrap;
+  }
+
+  /* ── Mobile ≤767px ── */
+  @media screen and (max-width: 767px) {
+    /*
+      Bar: hamburger left, logo truly centred (matches Figma).
+      Flex + flex:1 on the logo centres it in the space *after* the icon, so it sits left of true centre.
+      Three-column grid: fixed | 1fr | fixed mirrors the icon width so the logo centres in the viewport.
+    */
+    #hb-{{ section.id }} .hb-bar {
+      display: grid;
+      grid-template-columns: 22px minmax(0, 1fr) 22px;
+      align-items: center;
+      column-gap: 0;
+      padding: 23px 16px;
+    }
+    #hb-{{ section.id }} .hb-bar__hamburger {
+      display: block;
+      grid-column: 1;
+      justify-self: start;
+    }
+    #hb-{{ section.id }} .hb-bar__logo {
+      grid-column: 2;
+      justify-self: center;
+      min-width: 0;
+      max-width: 100%;
+      flex: unset;
+      text-align: center;
+      font-size: 14px;
+      line-height: normal;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    #hb-{{ section.id }} .hb-bar__text,
+    #hb-{{ section.id }} .hb-bar .hb-btn { display: none; }
+
+    /* ── Mobile drawer ── */
+    #hb-{{ section.id }} .hb-mobile-drawer {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    #hb-{{ section.id }} .hb-mobile-drawer__inner {
+      overflow: hidden;
+    }
+
+    #hb-{{ section.id }} .hb-mobile-drawer__content {
+      background: #f2f2f2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      padding: 25px 65.5px;
+    }
+
+    #hb-{{ section.id }} .hb-mobile-drawer__text {
+      font-family: 'Jost', sans-serif;
+      font-weight: 400;
+      font-size: 16px;
+      color: #000;
+      text-align: center;
+      margin: 0;
+      line-height: 1.3;
+    }
+
+    /* Drawer open state: driven by hb-menu[open] attribute */
+    #hb-{{ section.id }} hb-menu[open] .hb-mobile-drawer {
+      grid-template-rows: 1fr;
+    }
+
+    /* Drawer button: 244×44px fixed on mobile */
+    #hb-{{ section.id }} .hb-mobile-drawer .hb-btn {
+      min-width: 244px;
+      height: 44px;
+      font-size: 16px;
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+
+    /* Hero: hide desktop elements */
+    #hb-{{ section.id }} .hb-hero__top-img-wrap,
+    #hb-{{ section.id }} .hb-hero__secondary { display: none; }
+
+    /* Content: centred text column above image */
+    #hb-{{ section.id }} .hb-hero__content {
+      max-width: 100%;
+      min-height: 0;
+      padding: 36px 20px 24px;
+      align-items: center;
+      text-align: center;
+    }
+    #hb-{{ section.id }} .hb-heading {
+      font-size: 30px;
+      white-space: normal;
+      margin-bottom: 12px;
+    }
+    #hb-{{ section.id }} .hb-body {
+      font-size: 16px;
+      max-width: 340px;
+      margin-bottom: 0;
+    }
+    /* Desktop hero button hidden — rendered inside image area on mobile */
+    #hb-{{ section.id }} .hb-hero__content .hb-btn { display: none; }
+
+    /* Mobile image area */
+    #hb-{{ section.id }} .hb-hero__mobile-img-wrap {
+      display: block;
+      position: relative;
+      overflow: hidden;
+      min-height: 200px;
+    }
+    #hb-{{ section.id }} .hb-hero__mobile-img {
+      width: 183%;
+      max-width: none;
+      display: block;
+      margin-left: 50%;
+      transform: translateX(calc(-50% + 15.5px));
+      height: auto;
+    }
+
+    /* Mobile CTA: centred, overlaid at bottom of image */
+    #hb-{{ section.id }} .hb-btn--mobile-hero {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 39px;
+      font-size: 16px;
+      min-width: 159px;
+      height: 45px;
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+
+    /* Footer bar text can wrap on narrow screens */
+    #hb-{{ section.id }} .hb-footer-bar p {
+      font-size: 14px;
+      white-space: normal;
+    }
+  }
+</style>
+
+{%- comment -%} Arrow SVG reused across buttons {%- endcomment -%}
+{%- capture arrow_svg -%}
+<svg width="27" height="11" viewBox="0 0 27 11" fill="none" aria-hidden="true" focusable="false">
+  <line x1="0" y1="5.5" x2="22" y2="5.5" stroke="currentColor" stroke-width="1.2"/>
+  <polyline points="18,1 23,5.5 18,10" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round"/>
+</svg>
+{%- endcapture -%}
+
+<section id="hb-{{ section.id }}" class="header-banner">
+
+  <hb-menu>
+
+    {%- comment -%}── Top Bar ──{%- endcomment -%}
+    <div class="hb-bar">
+
+      <button
+        class="hb-bar__hamburger"
+        aria-label="Open menu"
+        aria-expanded="false"
+        aria-controls="hb-drawer-{{ section.id }}"
+      >
+        {%- comment -%} Hamburger icon (visible when closed) {%- endcomment -%}
+        <span class="hb-bar__icon hb-bar__icon--open" aria-hidden="true">
+          <svg width="18" height="10" viewBox="0 0 18 10" fill="none">
+            <line x1="0" y1="0.75" x2="18" y2="0.75" stroke="#000" stroke-width="1.5"/>
+            <line x1="0" y1="5"    x2="18" y2="5"    stroke="#000" stroke-width="1.5"/>
+            <line x1="0" y1="9.25" x2="18" y2="9.25" stroke="#000" stroke-width="1.5"/>
+          </svg>
+        </span>
+        {%- comment -%} Close icon (visible when open) {%- endcomment -%}
+        <span class="hb-bar__icon hb-bar__icon--close" aria-hidden="true">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <line x1="1" y1="1" x2="13" y2="13" stroke="#000" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="13" y1="1" x2="1" y2="13" stroke="#000" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </span>
+      </button>
+
+      <a href="{{ routes.root_url }}" class="hb-bar__logo">
+        {%- if section.settings.logo != blank -%}
+          {{- section.settings.logo
+              | image_url: height: 51
+              | image_tag:
+                  class: 'hb-bar__logo-img',
+                  loading: 'eager',
+                  widths: '50,100,152',
+                  sizes: 'clamp(14px, 1.319vw, 50.7px)',
+                  alt: shop.name -}}
+        {%- else -%}
+          {{- shop.name -}}
+        {%- endif -%}
+      </a>
+
+      {%- if section.settings.header_text != blank -%}
+        <p class="hb-bar__text">{{ section.settings.header_text }}</p>
+      {%- endif -%}
+
+      {%- if section.settings.header_button_label != blank -%}
+        <a href="{{ section.settings.header_button_url }}"
+           class="hb-btn hb-btn--{{ header_btn_style }}">
+          <span class="hb-btn__label">{{ section.settings.header_button_label }}</span>
+          <span class="hb-btn__arrow">{{ arrow_svg }}</span>
+        </a>
+      {%- endif -%}
+
+    </div>
+
+    {%- comment -%}── Mobile drawer (hidden on desktop) ──{%- endcomment -%}
+    <div
+      class="hb-mobile-drawer"
+      id="hb-drawer-{{ section.id }}"
+      role="region"
+      aria-label="Menu"
+    >
+      <div class="hb-mobile-drawer__inner">
+        <div class="hb-mobile-drawer__content">
+          {%- if section.settings.header_text != blank -%}
+            <p class="hb-mobile-drawer__text">{{ section.settings.header_text }}</p>
+          {%- endif -%}
+          {%- if section.settings.header_button_label != blank -%}
+            <a href="{{ section.settings.header_button_url }}"
+               class="hb-btn hb-btn--{{ header_btn_style }}">
+              <span class="hb-btn__label">{{ section.settings.header_button_label }}</span>
+              <span class="hb-btn__arrow">{{ arrow_svg }}</span>
+            </a>
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+
+  </hb-menu>
+
+  {%- comment -%}── Hero ──{%- endcomment -%}
+  <div class="hb-hero">
+
+    {%- comment -%} Desktop: top full-width hero image {%- endcomment -%}
+    <div class="hb-hero__top-img-wrap">
+      {%- if section.settings.hero_image != blank -%}
+        {{- section.settings.hero_image
+            | image_url: width: 3840
+            | image_tag:
+                class: 'hb-hero__top-img',
+                loading: 'eager',
+                fetchpriority: 'high',
+                widths: '750,1100,1440,1920,2560,3840',
+                sizes: '100vw' -}}
+      {%- else -%}
+        <div class="hb-hero__top-placeholder"></div>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} Desktop: text content — bottom-left {%- endcomment -%}
+    <div class="hb-hero__content">
+      {%- if section.settings.heading != blank -%}
+        <h2 class="hb-heading">{{ section.settings.heading | escape }}</h2>
+      {%- endif -%}
+      {%- if section.settings.body_text != blank -%}
+        <p class="hb-body">{{ section.settings.body_text }}</p>
+      {%- endif -%}
+      {%- if section.settings.hero_button_label != blank -%}
+        <a href="{{ section.settings.hero_button_url }}"
+           class="hb-btn hb-btn--{{ hero_btn_style }}">
+          <span class="hb-btn__label">{{ section.settings.hero_button_label }}</span>
+          <span class="hb-btn__arrow">{{ arrow_svg }}</span>
+        </a>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} Desktop: secondary overlapping image — bottom-right {%- endcomment -%}
+    <div class="hb-hero__secondary">
+      {%- if section.settings.secondary_image != blank -%}
+        {{- section.settings.secondary_image
+            | image_url: width: 3840
+            | image_tag:
+                loading: 'lazy',
+                widths: '750,1200,1800,2400,3840',
+                sizes: '62vw' -}}
+      {%- else -%}
+        <div class="hb-hero__secondary-placeholder"></div>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} Mobile: hero image with CTA overlaid {%- endcomment -%}
+    <div class="hb-hero__mobile-img-wrap">
+      {%- if mobile_img != blank -%}
+        {{- mobile_img
+            | image_url: width: 750
+            | image_tag:
+                class: 'hb-hero__mobile-img',
+                loading: 'eager',
+                widths: '375,686,750',
+                sizes: '183vw' -}}
+      {%- else -%}
+        <div style="height:220px;background:#e8e8e8;"></div>
+      {%- endif -%}
+      {%- if section.settings.hero_button_label != blank -%}
+        <a href="{{ section.settings.hero_button_url }}"
+           class="hb-btn hb-btn--{{ hero_btn_style }} hb-btn--mobile-hero">
+          <span class="hb-btn__label">{{ section.settings.hero_button_label }}</span>
+          <span class="hb-btn__arrow">{{ arrow_svg }}</span>
+        </a>
+      {%- endif -%}
+    </div>
+
+  </div>
+
+  {%- comment -%}── Footer Bar ──{%- endcomment -%}
+  <div class="hb-footer-bar">
+    {%- if section.settings.footer_text != blank -%}
+      <p>{{ section.settings.footer_text }}</p>
+    {%- endif -%}
+  </div>
+
+</section>
+
+<script>
+  (function () {
+    class HbMenu extends HTMLElement {
+      connectedCallback() {
+        this._btn = this.querySelector('.hb-bar__hamburger');
+        this._btn.addEventListener('click', () => this._toggle());
+        this._onKeyDown = (e) => {
+          if (e.key === 'Escape' && this.hasAttribute('open')) this._close();
+        };
+        this._onPointerDown = (e) => {
+          if (!this.contains(e.target)) this._close();
+        };
+        document.addEventListener('keydown', this._onKeyDown);
+        document.addEventListener('pointerdown', this._onPointerDown);
+      }
+
+      disconnectedCallback() {
+        document.removeEventListener('keydown', this._onKeyDown);
+        document.removeEventListener('pointerdown', this._onPointerDown);
+      }
+
+      _toggle() {
+        this.hasAttribute('open') ? this._close() : this._open();
+      }
+
+      _open() {
+        this.setAttribute('open', '');
+        this._btn.setAttribute('aria-expanded', 'true');
+        this._btn.setAttribute('aria-label', 'Close menu');
+      }
+
+      _close() {
+        this.removeAttribute('open');
+        this._btn.setAttribute('aria-expanded', 'false');
+        this._btn.setAttribute('aria-label', 'Open menu');
+      }
+    }
+
+    if (!customElements.get('hb-menu')) {
+      customElements.define('hb-menu', HbMenu);
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Header Banner",
+  "tag": "section",
+  "class": "section-header-banner",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Logo"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo image",
+      "info": "Displays store name as text fallback when not set."
+    },
+    {
+      "type": "header",
+      "content": "Announcement Bar"
+    },
+    {
+      "type": "text",
+      "id": "header_text",
+      "label": "Promo text",
+      "default": "Find the ideal gift for your loved ones."
+    },
+    {
+      "type": "text",
+      "id": "header_button_label",
+      "label": "Button label",
+      "default": "Choose Gift"
+    },
+    {
+      "type": "url",
+      "id": "header_button_url",
+      "label": "Button link"
+    },
+    {
+      "type": "select",
+      "id": "header_button_style",
+      "label": "Button style",
+      "options": [
+        { "value": "primary",   "label": "Primary (Black)" },
+        { "value": "secondary", "label": "Secondary (Yellow)" }
+      ],
+      "default": "secondary"
+    },
+    {
+      "type": "header",
+      "content": "Hero"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "The Gift Guide"
+    },
+    {
+      "type": "textarea",
+      "id": "body_text",
+      "label": "Body text",
+      "default": "Discover Joy: Your Ultimate Holiday Gift Destination. Explore our curated selection and find the perfect gifts to delight your loved ones this holiday season."
+    },
+    {
+      "type": "text",
+      "id": "hero_button_label",
+      "label": "Button label",
+      "default": "Shop Now"
+    },
+    {
+      "type": "url",
+      "id": "hero_button_url",
+      "label": "Button link"
+    },
+    {
+      "type": "select",
+      "id": "hero_button_style",
+      "label": "Button style",
+      "options": [
+        { "value": "primary",   "label": "Primary (Black)" },
+        { "value": "secondary", "label": "Secondary (Yellow)" }
+      ],
+      "default": "primary"
+    },
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "Hero image (desktop)"
+    },
+    {
+      "type": "image_picker",
+      "id": "hero_image_mobile",
+      "label": "Hero image (mobile)",
+      "info": "Falls back to desktop hero image if blank."
+    },
+    {
+      "type": "image_picker",
+      "id": "secondary_image",
+      "label": "Secondary image (desktop)"
+    },
+    {
+      "type": "header",
+      "content": "Footer Banner"
+    },
+    {
+      "type": "text",
+      "id": "footer_text",
+      "label": "Banner text",
+      "default": "Sustainable, ethically made clothes in sizes XXS to 6XL"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Header Banner"
+    }
+  ]
+}
+{% endschema %}
